@@ -3,6 +3,12 @@ use clap::Parser;
 use std::io::{self, IsTerminal, Read, Write};
 use std::process::{Command, Stdio};
 
+#[derive(clap::ValueEnum, Clone, Debug)]
+enum StdChoice {
+    /// Use the stdout from the command
+    StdOut,
+}
+
 #[derive(Parser, Debug)]
 #[command(name = "gi")]
 #[command(about = "A linter/formatter wrapper for `jj fix`")]
@@ -11,7 +17,12 @@ struct Args {
     /// The command and arguments to execute
     #[arg(required = true, trailing_var_arg = true, allow_hyphen_values = true)]
     command: Vec<String>,
+    /// Content of gi's stdout when the command executes successfully
+    #[arg(long, value_enum, default_value_t=StdChoice::StdOut)]
+    on_success_stdout: StdChoice,
 }
+
+const ERROR_CODE: i32 = 1;
 
 fn main() -> Result<()> {
     let args = Args::parse();
@@ -33,21 +44,27 @@ fn main() -> Result<()> {
 
     // Write stdin content to the child process if available.
     if let Some(mut stdin) = child.stdin.take() {
-        let handle = std::thread::spawn(move || -> io::Result<()> {
-            stdin.write_all(&stdin_content)?;
-            Ok(())
+        std::thread::scope(|s| {
+            s.spawn(|| -> io::Result<()> {
+                stdin.write_all(&stdin_content)?;
+                Ok(())
+            });
         });
-        match handle.join() {
-            Ok(result) => result?,
-            Err(_) => anyhow::bail!("failed to write to child's stdin"),
-        }
     }
 
     let output = child.wait_with_output()?;
-
-    // Write to stdout.
-    io::stdout().write_all(&output.stdout)?;
-
-    // Exit with the same status code as the child process.
-    std::process::exit(output.status.code().unwrap_or(1));
+    let exit_code = output.status.code().unwrap_or(ERROR_CODE);
+    match exit_code {
+        0 => {
+            match args.on_success_stdout {
+                StdChoice::StdOut => {
+                    io::stdout().write_all(&output.stdout)?;
+                }
+            }
+            std::process::exit(exit_code);
+        }
+        _ => {
+            std::process::exit(exit_code);
+        }
+    }
 }
