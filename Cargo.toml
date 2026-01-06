@@ -2,6 +2,8 @@
 name = "jjgi"
 version = "0.1.0"
 edition = "2024"
+description = "A linter/formatter wrapper for jj fix"
+license = "MIT"                                       # Standard Rust licensing
 
 [dependencies]
 clap = { version = "4.5.54", features = ["derive"] }
