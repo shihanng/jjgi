@@ -7,6 +7,8 @@ use std::process::{Command, Stdio};
 enum StdChoice {
     /// Use the stdout from the command
     StdOut,
+    /// Use the stdin
+    StdIn,
 }
 
 #[derive(Parser, Debug)]
@@ -59,6 +61,9 @@ fn main() -> Result<()> {
             match args.on_success_stdout {
                 StdChoice::StdOut => {
                     io::stdout().write_all(&output.stdout)?;
+                }
+                StdChoice::StdIn => {
+                    io::stdout().write_all(&stdin_content)?;
                 }
             }
             std::process::exit(exit_code);

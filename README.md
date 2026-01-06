@@ -19,3 +19,39 @@ Clone this repository and run `cargo install`.
 git clone https://github.com/shihanng/gi
 cargo install --path .
 ```
+
+## Usage
+
+Use `gi` inside `jj`'s config file.
+For example, [`luacheck`](https://github.com/mpeterv/luacheck)
+can accept standard input but does not produce the file content
+in standard output.
+Instead, it outputs the status to standard output.
+
+```sh
+cat something.lua | luacheck -
+Checking stdin                                    OK
+
+Total: 0 warnings / 0 errors in 1 file
+```
+
+This means that when `luacheck` does not report any errors,
+`jj fix` will replace the entire file with empty content.
+
+We can set up `luacheck` using `gi` in the `jj` config file
+so that it works correctly with `jj fix`:
+
+```toml
+[fix.tools.luacheck]
+command = [
+  "gi",
+  "--on-success-stdout=std-in",
+  "--",
+  "luacheck",
+  "-",
+]
+patterns = ["glob:'**/*.lua'"]
+```
+
+The `--on-success-stdout=std-in` flag tells `gi` to use the standard input
+as the value of standard output when `luacheck` exits with a success status.
