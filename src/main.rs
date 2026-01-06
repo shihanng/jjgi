@@ -4,13 +4,13 @@ use std::io::{self, IsTerminal, Read, Write};
 use std::process::{Command, Stdio};
 
 #[derive(clap::ValueEnum, Clone, Debug)]
-enum StdChoice {
+enum OutputSource {
     /// Use the stdout from the command
-    StdOut,
+    Stdout,
     /// Use the stdin
-    StdIn,
+    Stdin,
     /// Use the stderr from the command
-    StdErr,
+    Stderr,
 }
 
 #[derive(Parser, Debug)]
@@ -22,11 +22,11 @@ struct Args {
     #[arg(required = true, trailing_var_arg = true, allow_hyphen_values = true)]
     command: Vec<String>,
     /// Content of jjgi's stdout when the command executes successfully
-    #[arg(long, value_enum, default_value_t=StdChoice::StdOut)]
-    on_success_stdout: StdChoice,
+    #[arg(long, value_enum, default_value_t=OutputSource::Stdout)]
+    on_success_stdout: OutputSource,
     /// Content of jjgi's stderr when the command executes successfully
-    #[arg(long, value_enum, default_value_t=StdChoice::StdOut)]
-    on_success_stderr: StdChoice,
+    #[arg(long, value_enum, default_value_t=OutputSource::Stdout)]
+    on_success_stderr: OutputSource,
 }
 
 const ERROR_CODE: i32 = 1;
@@ -64,24 +64,24 @@ fn main() -> Result<()> {
     match exit_code {
         0 => {
             match args.on_success_stdout {
-                StdChoice::StdOut => {
+                OutputSource::Stdout => {
                     io::stdout().write_all(&output.stdout)?;
                 }
-                StdChoice::StdIn => {
+                OutputSource::Stdin => {
                     io::stdout().write_all(&stdin_content)?;
                 }
-                StdChoice::StdErr => {
+                OutputSource::Stderr => {
                     io::stdout().write_all(&output.stderr)?;
                 }
             }
             match args.on_success_stderr {
-                StdChoice::StdOut => {
+                OutputSource::Stdout => {
                     io::stderr().write_all(&output.stdout)?;
                 }
-                StdChoice::StdIn => {
+                OutputSource::Stdin => {
                     io::stderr().write_all(&stdin_content)?;
                 }
-                StdChoice::StdErr => {
+                OutputSource::Stderr => {
                     io::stderr().write_all(&output.stderr)?;
                 }
             }

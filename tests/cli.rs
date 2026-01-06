@@ -27,8 +27,8 @@ fn no_stdout_use_stdin() {
     let mut cmd = cargo_bin_cmd!("jjgi");
 
     cmd.args([
-        "--on-success-stdout=std-in",
-        "--on-success-stderr=std-err",
+        "--on-success-stdout=stdin",
+        "--on-success-stderr=stderr",
         "--",
         "./tests/scripts/no_stdout.sh",
     ])

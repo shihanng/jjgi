@@ -45,8 +45,8 @@ so that it works correctly with `jj fix`:
 [fix.tools.luacheck]
 command = [
   "jjgi",
-  "--on-success-stdout=std-in",
-  "--on-success-stderr=std-out",
+  "--on-success-stdout=stdin",
+  "--on-success-stderr=stdout",
   "--",
   "luacheck",
   "-",
@@ -54,9 +54,9 @@ command = [
 patterns = ["glob:'**/*.lua'"]
 ```
 
-The `--on-success-stdout=std-in` flag tells `jjgi` to use the standard input
+The `--on-success-stdout=stdin` flag tells `jjgi` to use the standard input
 as the value of standard output when `luacheck` exits with a success status.
-The `--on-success-stderr=std-out` flag tells `jjgi` to use the standard output
+The `--on-success-stderr=stdout` flag tells `jjgi` to use the standard output
 from the wrapped command as the value of standard error
 when `luacheck` exits with a success status.
 This allows us to display status, debug, or log messages
