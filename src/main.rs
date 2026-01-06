@@ -9,6 +9,8 @@ enum StdChoice {
     StdOut,
     /// Use the stdin
     StdIn,
+    /// Use the stderr from the command
+    StdErr,
 }
 
 #[derive(Parser, Debug)]
@@ -22,6 +24,9 @@ struct Args {
     /// Content of jjgi's stdout when the command executes successfully
     #[arg(long, value_enum, default_value_t=StdChoice::StdOut)]
     on_success_stdout: StdChoice,
+    /// Content of jjgi's stderr when the command executes successfully
+    #[arg(long, value_enum, default_value_t=StdChoice::StdOut)]
+    on_success_stderr: StdChoice,
 }
 
 const ERROR_CODE: i32 = 1;
@@ -64,6 +69,20 @@ fn main() -> Result<()> {
                 }
                 StdChoice::StdIn => {
                     io::stdout().write_all(&stdin_content)?;
+                }
+                StdChoice::StdErr => {
+                    io::stdout().write_all(&output.stderr)?;
+                }
+            }
+            match args.on_success_stderr {
+                StdChoice::StdOut => {
+                    io::stderr().write_all(&output.stdout)?;
+                }
+                StdChoice::StdIn => {
+                    io::stderr().write_all(&stdin_content)?;
+                }
+                StdChoice::StdErr => {
+                    io::stderr().write_all(&output.stderr)?;
                 }
             }
             std::process::exit(exit_code);

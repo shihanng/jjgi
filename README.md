@@ -29,7 +29,7 @@ in standard output.
 Instead, it outputs the status to standard output.
 
 ```sh
-cat something.lua | luacheck -
+$ cat something.lua | luacheck -
 Checking stdin                                    OK
 
 Total: 0 warnings / 0 errors in 1 file
@@ -46,6 +46,7 @@ so that it works correctly with `jj fix`:
 command = [
   "jjgi",
   "--on-success-stdout=std-in",
+  "--on-success-stderr=std-out",
   "--",
   "luacheck",
   "-",
@@ -55,3 +56,20 @@ patterns = ["glob:'**/*.lua'"]
 
 The `--on-success-stdout=std-in` flag tells `jjgi` to use the standard input
 as the value of standard output when `luacheck` exits with a success status.
+The `--on-success-stderr=std-out` flag tells `jjgi` to use the standard output
+from the wrapped command as the value of standard error
+when `luacheck` exits with a success status.
+This allows us to display status, debug, or log messages
+from the wrapped command when running `jj fix`.
+An example from `luacheck` would be the following:
+
+```sh
+$ jj fix
+something.lua:
+Checking stdin                                    OK
+
+Total: 0 warnings / 0 errors in 1 file
+
+Fixed 0 commits of 1 checked.
+Nothing changed.
+```

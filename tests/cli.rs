@@ -19,7 +19,7 @@ fn no_stdout() {
         .write_stdin("test")
         .assert()
         .success()
-        .stdout("Done\n");
+        .stdout("");
 }
 
 #[test]
@@ -28,11 +28,13 @@ fn no_stdout_use_stdin() {
 
     cmd.args([
         "--on-success-stdout=std-in",
+        "--on-success-stderr=std-err",
         "--",
         "./tests/scripts/no_stdout.sh",
     ])
     .write_stdin("test")
     .assert()
     .success()
-    .stdout("test");
+    .stdout("test")
+    .stderr("Done\n");
 }
