@@ -8,6 +8,7 @@ license = "MIT"                                       # Standard Rust licensing
 [dependencies]
 clap = { version = "4.5.54", features = ["derive"] }
 anyhow = { version = "1.0.100" }
+tempfile = "3.24.0"
 
 [dev-dependencies]
 assert_cmd = "2.1.1"

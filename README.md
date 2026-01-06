@@ -38,6 +38,8 @@ Total: 0 warnings / 0 errors in 1 file
 This means that when `luacheck` does not report any errors,
 `jj fix` will replace the entire file with empty content.
 
+### --on-success-stdout/stderr
+
 We can set up `luacheck` using `jjgi` in the `jj` config file
 so that it works correctly with `jj fix`:
 
@@ -72,4 +74,29 @@ Total: 0 warnings / 0 errors in 1 file
 
 Fixed 0 commits of 1 checked.
 Nothing changed.
+```
+
+### --stdin-file
+
+The `--stdin-file` flag stores the standard input into a temporary file
+that the wrapped command can refer to using `{stdin_file}`.
+This is particularly useful when the command cannot read from standard input.
+
+Here is an example using [sort-lines](https://pypi.org/project/sort-lines/).
+When sort-lines exits successfully,
+it means that it has formatted `{stdin_file}` in the correct sort order.
+We then use the content of `{stdin_file}` as standard output so that
+the changes are applied to the actual file.
+
+```toml
+[fix.tools.sort-lines]
+command = [
+  "jjgi",
+  "--stdin-file",
+  "--on-success-stdout=stdin-file",
+  "--",
+  "sort-lines",
+  "{stdin_file}",
+]
+patterns = ["glob:'**/*'"]
 ```

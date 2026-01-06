@@ -38,3 +38,25 @@ fn no_stdout_use_stdin() {
     .stdout("test")
     .stderr("Done\n");
 }
+
+#[test]
+fn stdin_file() {
+    let mut cmd = cargo_bin_cmd!("jjgi");
+
+    cmd.args(["--stdin-file", "--", "cat", "-n", "{stdin_file}"])
+        .write_stdin("test")
+        .assert()
+        .success()
+        .stdout("     1\ttest");
+}
+
+#[test]
+fn stdin_file_no_arg() {
+    let mut cmd = cargo_bin_cmd!("jjgi");
+
+    cmd.args(["--stdin-file", "--", "cat"])
+        .write_stdin("test")
+        .assert()
+        .success()
+        .stdout("");
+}

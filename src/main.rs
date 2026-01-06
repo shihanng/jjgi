@@ -11,6 +11,8 @@ enum OutputSource {
     Stdin,
     /// Use the stderr from the command
     Stderr,
+    /// Use the content from '{stdin_file}'
+    StdinFile,
 }
 
 #[derive(Parser, Debug)]
@@ -27,9 +29,13 @@ struct Args {
     /// Content of jjgi's stderr when the command executes successfully
     #[arg(long, value_enum, default_value_t=OutputSource::Stdout)]
     on_success_stderr: OutputSource,
+    /// Store stdin in a temporary file that the command can access by referencing '{stdin_file}'
+    #[arg(long, default_value_t = false)]
+    stdin_file: bool,
 }
 
 const ERROR_CODE: i32 = 1;
+const STDIN_FILE_PLACEHOLDER: &str = "{stdin_file}";
 
 fn main() -> Result<()> {
     let args = Args::parse();
@@ -42,21 +48,44 @@ fn main() -> Result<()> {
         io::stdin().read_to_end(&mut stdin_content)?;
     }
 
+    // Save stdin to a temporary file if the flag is set
+    let stdin_file: Option<tempfile::NamedTempFile> = if args.stdin_file {
+        let mut temp = tempfile::NamedTempFile::new()?;
+        temp.write_all(&stdin_content)?;
+        temp.flush()?;
+        Some(temp)
+    } else {
+        None
+    };
+
+    let stdin_file_path = if let Some(ref f) = stdin_file {
+        f.path().to_str().unwrap_or(STDIN_FILE_PLACEHOLDER)
+    } else {
+        STDIN_FILE_PLACEHOLDER
+    };
+
+    let command_args: Vec<String> = args.command[1..]
+        .iter()
+        .map(|arg| arg.replace(STDIN_FILE_PLACEHOLDER, stdin_file_path))
+        .collect();
+
     let mut child = Command::new(&args.command[0])
-        .args(&args.command[1..])
+        .args(&command_args)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()?;
 
     // Write stdin content to the child process if available.
-    if let Some(mut stdin) = child.stdin.take() {
-        std::thread::scope(|s| {
-            s.spawn(|| -> io::Result<()> {
-                stdin.write_all(&stdin_content)?;
-                Ok(())
+    if !args.stdin_file {
+        if let Some(mut stdin) = child.stdin.take() {
+            std::thread::scope(|s| {
+                s.spawn(|| -> io::Result<()> {
+                    stdin.write_all(&stdin_content)?;
+                    Ok(())
+                });
             });
-        });
+        }
     }
 
     let output = child.wait_with_output()?;
@@ -73,6 +102,12 @@ fn main() -> Result<()> {
                 OutputSource::Stderr => {
                     io::stdout().write_all(&output.stderr)?;
                 }
+                OutputSource::StdinFile => {
+                    if let Some(ref f) = stdin_file {
+                        let content = std::fs::read(f.path())?;
+                        io::stdout().write_all(&content)?;
+                    }
+                }
             }
             match args.on_success_stderr {
                 OutputSource::Stdout => {
@@ -83,6 +118,12 @@ fn main() -> Result<()> {
                 }
                 OutputSource::Stderr => {
                     io::stderr().write_all(&output.stderr)?;
+                }
+                OutputSource::StdinFile => {
+                    if let Some(ref f) = stdin_file {
+                        let content = std::fs::read(f.path())?;
+                        io::stderr().write_all(&content)?;
+                    }
                 }
             }
             std::process::exit(exit_code);
