@@ -12,14 +12,14 @@ enum StdChoice {
 }
 
 #[derive(Parser, Debug)]
-#[command(name = "gi")]
+#[command(name = "jjgi")]
 #[command(about = "A linter/formatter wrapper for `jj fix`")]
-#[command(long_about = "gi: A linter/formatter wrapper for `jj fix`")]
+#[command(long_about = "jjgi: A linter/formatter wrapper for `jj fix`")]
 struct Args {
     /// The command and arguments to execute
     #[arg(required = true, trailing_var_arg = true, allow_hyphen_values = true)]
     command: Vec<String>,
-    /// Content of gi's stdout when the command executes successfully
+    /// Content of jjgi's stdout when the command executes successfully
     #[arg(long, value_enum, default_value_t=StdChoice::StdOut)]
     on_success_stdout: StdChoice,
 }
