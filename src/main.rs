@@ -27,7 +27,7 @@ struct Args {
     #[arg(long, value_enum, default_value_t=OutputSource::Stdout)]
     on_success_stdout: OutputSource,
     /// Content of jjgi's stderr when the command executes successfully
-    #[arg(long, value_enum, default_value_t=OutputSource::Stdout)]
+    #[arg(long, value_enum, default_value_t=OutputSource::Stderr)]
     on_success_stderr: OutputSource,
     /// Store stdin in a temporary file that the command can access by referencing '{stdin_file}'
     #[arg(long, default_value_t = false)]

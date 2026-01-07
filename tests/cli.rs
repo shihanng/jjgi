@@ -8,7 +8,8 @@ fn basic() {
         .write_stdin("test")
         .assert()
         .success()
-        .stdout("test");
+        .stdout("test")
+        .stderr("");
 }
 
 #[test]
@@ -19,7 +20,8 @@ fn no_stdout() {
         .write_stdin("test")
         .assert()
         .success()
-        .stdout("");
+        .stdout("")
+        .stderr("Done\n");
 }
 
 #[test]
@@ -47,7 +49,8 @@ fn stdin_file() {
         .write_stdin("test")
         .assert()
         .success()
-        .stdout("     1\ttest");
+        .stdout("     1\ttest")
+        .stderr("");
 }
 
 #[test]
@@ -58,5 +61,6 @@ fn stdin_file_no_arg() {
         .write_stdin("test")
         .assert()
         .success()
-        .stdout("");
+        .stdout("")
+        .stderr("");
 }
