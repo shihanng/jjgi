@@ -93,15 +93,16 @@ fn main() -> Result<()> {
         .spawn()?;
 
     // Write stdin content to the child process if available.
-    if !args.stdin_file && args.file.is_none() {
-        if let Some(mut stdin) = child.stdin.take() {
-            std::thread::scope(|s| {
-                s.spawn(|| -> io::Result<()> {
-                    stdin.write_all(&stdin_content)?;
-                    Ok(())
-                });
+    if !args.stdin_file
+        && args.file.is_none()
+        && let Some(mut stdin) = child.stdin.take()
+    {
+        std::thread::scope(|s| {
+            s.spawn(|| -> io::Result<()> {
+                stdin.write_all(&stdin_content)?;
+                Ok(())
             });
-        }
+        });
     }
 
     let output = child.wait_with_output()?;
