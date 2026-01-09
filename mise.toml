@@ -1,2 +1,5 @@
 [env]
 _.path = ['./target/debug/']
+
+[tools]
+"github:axodotdev/cargo-dist" = "0.30.3"

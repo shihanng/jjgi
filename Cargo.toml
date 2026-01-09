@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2024"
 description = "A linter/formatter wrapper for jj fix"
 license = "MIT"                                       # Standard Rust licensing
+repository = "https://github.com/shihanng/jjgi"
+homepage = "https://github.com/shihanng/jjgi"
 
 [dependencies]
 clap = { version = "4.5.54", features = ["derive"] }
@@ -12,3 +14,8 @@ tempfile = "3.24.0"
 
 [dev-dependencies]
 assert_cmd = "2.1.1"
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
