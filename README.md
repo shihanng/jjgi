@@ -125,3 +125,11 @@ to format/check the `{file}`.
 If the formatting completes without error, we can use
 the content of the formatted file `{file}` in standard output
 to fulfill `jj fix`'s requirement of having the result in standard output.
+
+## Developement
+
+### How to release `jjgi`
+
+```sh
+cargo release ...
+```

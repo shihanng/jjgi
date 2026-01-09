@@ -3,3 +3,4 @@ _.path = ['./target/debug/']
 
 [tools]
 "github:axodotdev/cargo-dist" = "0.30.3"
+"cargo:cargo-release" = "0.25.22"
