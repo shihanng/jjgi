@@ -146,31 +146,6 @@ command = [
 patterns = ["glob:'**/*'"]
 ```
 
-### --file
-
-Another approach is to pass the file path directly via `--file`.
-Using the same `sort-lines` example:
-
-```toml
-[fix.tools.sort-lines]
-command = [
-  "jjgi",
-  "--file=$path",
-  "--on-success-stdout=file",
-  "--",
-  "sort-lines",
-  "{file}",
-]
-patterns = ["glob:'**/*'"]
-```
-
-Here, `$path` (provided by `jj fix`) is passed to the `--file=` argument.
-`jjgi` then substitutes `{file}` in the command with this path,
-instructing `sort-lines` to format the file in place.
-When formatting completes successfully, `--on-success-stdout=file`
-tells `jjgi` to output the formatted file's content to standard output,
-fulfilling `jj fix`'s requirement.
-
 ## Development
 
 ### How to release `jjgi`

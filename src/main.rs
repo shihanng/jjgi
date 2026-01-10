@@ -13,8 +13,6 @@ enum OutputSource {
     Stderr,
     /// Use the content from '{stdin_file}'
     StdinFile,
-    /// Use the content from '{file}'
-    File,
 }
 
 #[derive(Parser, Debug)]
@@ -32,17 +30,12 @@ struct Args {
     #[arg(long, value_enum, default_value_t=OutputSource::Stderr)]
     on_success_stderr: OutputSource,
     /// Store stdin in a temporary file that the command can access by referencing '{stdin_file}'
-    #[arg(long, default_value_t = false, conflicts_with = "file")]
+    #[arg(long, default_value_t = false)]
     stdin_file: bool,
-    /// Path to a file that can be referenced using '{file}' in the command. When set, stdin will
-    /// not be piped to the command.
-    #[arg(long, conflicts_with = "stdin_file")]
-    file: Option<String>,
 }
 
 const ERROR_CODE: i32 = 1;
 const STDIN_FILE_PLACEHOLDER: &str = "{stdin_file}";
-const FILE_PLACEHOLDER: &str = "{file}";
 
 fn main() -> Result<()> {
     let args = Args::parse();
@@ -71,18 +64,9 @@ fn main() -> Result<()> {
         STDIN_FILE_PLACEHOLDER
     };
 
-    let file_path = if let Some(ref f) = args.file {
-        f
-    } else {
-        FILE_PLACEHOLDER
-    };
-
     let command_args: Vec<String> = args.command[1..]
         .iter()
-        .map(|arg| {
-            arg.replace(STDIN_FILE_PLACEHOLDER, stdin_file_path)
-                .replace(FILE_PLACEHOLDER, file_path)
-        })
+        .map(|arg| arg.replace(STDIN_FILE_PLACEHOLDER, stdin_file_path))
         .collect();
 
     let mut child = Command::new(&args.command[0])
@@ -94,7 +78,6 @@ fn main() -> Result<()> {
 
     // Write stdin content to the child process if available.
     if !args.stdin_file
-        && args.file.is_none()
         && let Some(mut stdin) = child.stdin.take()
     {
         std::thread::scope(|s| {
@@ -125,12 +108,6 @@ fn main() -> Result<()> {
                         io::stdout().write_all(&content)?;
                     }
                 }
-                OutputSource::File => {
-                    if let Some(ref file_path) = args.file {
-                        let content = std::fs::read(file_path)?;
-                        io::stdout().write_all(&content)?;
-                    }
-                }
             }
             match args.on_success_stderr {
                 OutputSource::Stdout => {
@@ -145,12 +122,6 @@ fn main() -> Result<()> {
                 OutputSource::StdinFile => {
                     if let Some(ref f) = stdin_file {
                         let content = std::fs::read(f.path())?;
-                        io::stderr().write_all(&content)?;
-                    }
-                }
-                OutputSource::File => {
-                    if let Some(ref file_path) = args.file {
-                        let content = std::fs::read(file_path)?;
                         io::stderr().write_all(&content)?;
                     }
                 }
