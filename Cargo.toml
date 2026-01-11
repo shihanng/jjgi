@@ -1,6 +1,6 @@
 [package]
 name = "jjgi"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
 description = "A linter/formatter wrapper for jj fix"
 license = "MIT"                                       # Standard Rust licensing
