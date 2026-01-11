@@ -1,3 +1,20 @@
+[[tools."aqua:google/yamlfmt"]]
+version = "0.21.0"
+backend = "aqua:google/yamlfmt"
+
+[[tools."aqua:koalaman/shellcheck"]]
+version = "0.11.0"
+backend = "aqua:koalaman/shellcheck"
+"platforms.macos-arm64" = { checksum = "sha256:56affdd8de5527894dca6dc3d7e0a99a873b0f004d7aabc30ae407d3f48b0a79", url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.aarch64.tar.xz"}
+
+[[tools."aqua:mvdan/sh"]]
+version = "3.12.0"
+backend = "aqua:mvdan/sh"
+
+[[tools."aqua:rhysd/actionlint"]]
+version = "1.7.10"
+backend = "aqua:rhysd/actionlint"
+
 [[tools."cargo:cargo-release"]]
 version = "0.25.22"
 backend = "cargo:cargo-release"
@@ -10,6 +27,10 @@ backend = "github:axodotdev/cargo-dist"
 "platforms.macos-arm64" = { checksum = "sha256:e5b587c7fe71a89ee3325745984ac412982d6c0e6ec8d4d5072fe579b38765cf", url = "https://github.com/axodotdev/cargo-dist/releases/download/v0.30.3/cargo-dist-aarch64-apple-darwin.tar.xz", url_api = "https://api.github.com/repos/axodotdev/cargo-dist/releases/assets/328785643"}
 "platforms.macos-x64" = { checksum = "sha256:81e53353e142ed4bd838be82abc59309cd580e67f8c61eebb4e932ef1982480d", url = "https://github.com/axodotdev/cargo-dist/releases/download/v0.30.3/cargo-dist-x86_64-apple-darwin.tar.xz", url_api = "https://api.github.com/repos/axodotdev/cargo-dist/releases/assets/328785650"}
 "platforms.windows-x64" = { checksum = "sha256:8fe2d2ce1be4e6e2efe26700490b1765dff203595544bddf3e67378b72c0e228", url = "https://github.com/axodotdev/cargo-dist/releases/download/v0.30.3/cargo-dist-x86_64-pc-windows-msvc.zip", url_api = "https://api.github.com/repos/axodotdev/cargo-dist/releases/assets/328785651"}
+
+[[tools."npm:markdownlint-cli2"]]
+version = "0.20.0"
+backend = "npm:markdownlint-cli2"
 
 [[tools."ubi:casey/just"]]
 version = "1.46.0"
