@@ -29,6 +29,9 @@ struct Args {
     /// Content of jjgi's stderr when the command executes successfully
     #[arg(long, value_enum, default_value_t=OutputSource::Stderr)]
     on_success_stderr: OutputSource,
+    /// Content of jjgi's stderr when the command executes successfully
+    #[arg(long, value_enum, default_value_t=OutputSource::Stderr)]
+    on_failure_stderr: OutputSource,
     /// Store stdin in a temporary file that the command can access by referencing '{stdin_file}'
     #[arg(long, default_value_t = false)]
     stdin_file: bool,
@@ -129,6 +132,23 @@ fn main() -> Result<()> {
             std::process::exit(exit_code);
         }
         _ => {
+            match args.on_failure_stderr {
+                OutputSource::Stdout => {
+                    io::stderr().write_all(&output.stdout)?;
+                }
+                OutputSource::Stdin => {
+                    io::stderr().write_all(&stdin_content)?;
+                }
+                OutputSource::Stderr => {
+                    io::stderr().write_all(&output.stderr)?;
+                }
+                OutputSource::StdinFile => {
+                    if let Some(ref f) = stdin_file {
+                        let content = std::fs::read(f.path())?;
+                        io::stderr().write_all(&content)?;
+                    }
+                }
+            }
             std::process::exit(exit_code);
         }
     }

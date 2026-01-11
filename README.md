@@ -146,6 +146,16 @@ command = [
 patterns = ["glob:'**/*'"]
 ```
 
+### --on-failure-stderr
+
+By default, `jjgi` uses the standard error of the wrapper command
+as its standard error when the command exits with an error code.
+However, some commands output status or error details to standard output.
+Using `--on-failure-stderr=stdout`,
+we can route the standard output of the command
+to the standard error of `jjgi`,
+allowing us to see the error details when `jj fix` detects a failure.
+
 ## Development
 
 ### How to release `jjgi`

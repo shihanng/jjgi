@@ -64,3 +64,27 @@ fn stdin_file_no_arg() {
         .stdout("")
         .stderr("");
 }
+
+#[test]
+fn err() {
+    let mut cmd = cargo_bin_cmd!("jjgi");
+
+    cmd.args(["--", "./tests/scripts/err.sh"])
+        .write_stdin("test")
+        .assert()
+        .failure()
+        .stdout("")
+        .stderr("");
+}
+
+#[test]
+fn err_stderr() {
+    let mut cmd = cargo_bin_cmd!("jjgi");
+
+    cmd.args(["--on-failure-stderr=stdout", "--", "./tests/scripts/err.sh"])
+        .write_stdin("test")
+        .assert()
+        .failure()
+        .stdout("")
+        .stderr("Fail to process\n");
+}
