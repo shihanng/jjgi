@@ -13,7 +13,7 @@ anyhow = { version = "1.0.100" }
 tempfile = "3.24.0"
 
 [dev-dependencies]
-assert_cmd = "2.1.1"
+assert_cmd = "2.1.2"
 
 # The profile that 'dist' will build with
 [profile.dist]
