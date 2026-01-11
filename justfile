@@ -5,7 +5,10 @@ lint-rust:
     cargo check --all-targets --all-features
     cargo clippy --all-targets --all-features -- -D warnings
 
-lint: lint-rust
+lint-mise:
+    mise fmt --check
+
+lint: lint-rust lint-mise
 
 test:
     cargo test --all-features

@@ -4,4 +4,4 @@ _.path = ['./target/debug/']
 [tools]
 "github:axodotdev/cargo-dist" = "0.30.3"
 "cargo:cargo-release" = "0.25.22"
-"ubi:casey/just" = "1.40.0"
+"ubi:casey/just" = "1.46.0"
