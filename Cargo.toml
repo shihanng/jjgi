@@ -8,7 +8,7 @@ repository = "https://github.com/shihanng/jjgi"
 homepage = "https://github.com/shihanng/jjgi"
 
 [dependencies]
-clap = { version = "4.5.56", features = ["derive"] }
+clap = { version = "4.5.58", features = ["derive"] }
 anyhow = { version = "1.0.100" }
 tempfile = "3.24.0"
 
